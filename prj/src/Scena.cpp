@@ -71,7 +71,7 @@ void Scena::Ruch(double angle, double droga, double speedd)
     aktualny->set_howFar() = droga;
     aktualny->set_speed() = speedd;
     aktualny->set_angle() = angle;
-    aktualny->jazda(Lacze);
+    aktualny->jazda(Lacze,aktualny, lista_obiektow);
     aktualny->obr(Lacze);
 }
 

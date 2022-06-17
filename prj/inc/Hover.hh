@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <unistd.h>
 #include "ObiektGeom.hh"
 #include "lacze_do_gnuplota.hh"
@@ -10,14 +11,18 @@ class Hover : public ObiektGeom
   double angle;
   double angle_wypadkowy;
 
+
 public:
-
-CollisionType CollisionBool(std::shared_ptr<Hover> & hoverr)
-{
+  
+  CollisionType CollisionBool(std::shared_ptr<ObiektGeom> l)
+  {
+   
+    if (przeciecie((*l).get_obrys()))
+    {
+      return CT_Collision;
+    }
     return CT_NoCollision;
-}
-
- 
+  }
   Hover()
   {
     angle_wypadkowy = 0;
@@ -25,6 +30,36 @@ CollisionType CollisionBool(std::shared_ptr<Hover> & hoverr)
   Hover(const char *sNazwaPliku_BrylaWzorcowa, const char *sNazwaObiektu, int KolorID) : ObiektGeom(sNazwaPliku_BrylaWzorcowa, sNazwaObiektu, KolorID)
   {
     angle_wypadkowy = 0;
+  }
+
+
+  void jazda(PzG::LaczeDoGNUPlota &lacze,std::shared_ptr<Hover> aktulany, std::list<std::shared_ptr<ObiektGeom>> &lista_obiektow)
+  {
+    Vector3D wek;
+    wek[1] = speed;
+
+    for (double i = 0; i < howFar; i += speed)
+    {
+      for (std::list<std::shared_ptr<ObiektGeom>>::iterator i = lista_obiektow.begin(); i != lista_obiektow.end(); i++)
+      {
+        if ( aktulany != (std::dynamic_pointer_cast<Hover>(*i)))
+        {
+            
+          if (CollisionBool((*i)) == CT_Collision)
+          {
+            cout<<endl;
+            cout<<"Kolizja z: ";
+            cout<<(*i)->WezNazweObiektu()<<endl<<endl;            
+            cout << "     -----  K o L i Z j A -----" << endl;
+            return;
+          }
+        }
+      }
+      set_polozenie() = get_polozenie() + (rotZ(angle_wypadkowy) * wek);
+      Przelicz_i_Zapisz_Wierzcholki();
+      lacze.Rysuj();
+      usleep(10000);
+    }
   }
 
   void obr()
@@ -48,21 +83,7 @@ CollisionType CollisionBool(std::shared_ptr<Hover> & hoverr)
     }
   }
 
-  void jazda(PzG::LaczeDoGNUPlota &lacze)
-  {
-    Vector3D wek;
-    wek[1] = speed;
-
-    for (double i = 0; i < howFar; i += speed)
-    {
-      set_polozenie() = get_polozenie() + (rotZ(angle_wypadkowy)* wek);
-      Przelicz_i_Zapisz_Wierzcholki();
-      lacze.Rysuj();
-      usleep(10000);
-    }
-  }
-
-  void obr(PzG::LaczeDoGNUPlota &lacze)
+ void obr(PzG::LaczeDoGNUPlota &lacze)
   {
 
     for (int i = 0; i < angle; i++)

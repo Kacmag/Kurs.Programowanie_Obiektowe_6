@@ -11,7 +11,7 @@ public:
     
   }
 
-CollisionType CollisionBool(std::shared_ptr<Hover> & hoverr)
+CollisionType CollisionBool(std::shared_ptr<ObiektGeom>  hoverr)
 {
       hoverr;
     return CT_NoCollision;

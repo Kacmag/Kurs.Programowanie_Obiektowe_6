@@ -10,7 +10,7 @@ ObiektGeom::ObiektGeom(const char *sNazwaPliku_BrylaWzorcowa,
 {
  
   for (int i = 0; i < 3; i++)
-    matrix_obr[i][i] = 1;
+    macierz_obr[i][i] = 1;
   angle_zadany = 0;
   _NazwaObiektu = sNazwaObiektu;
   _NazwaPliku_BrylaRysowana = NAZWA_KARTOTEKI_PLIKOW_DO_RYSOWANIA;
@@ -53,6 +53,8 @@ bool ObiektGeom::Przelicz_i_Zapisz_Wierzcholki(std::ostream &StrmWy, std::istrea
 
 bool ObiektGeom::Przelicz_i_Zapisz_Wierzcholki()
 {
+  vector<double> x;
+  vector<double> y;
   ifstream StrmWe(_NazwaPliku_BrylaWzorcowa);
   ofstream StrmWy(_NazwaPliku_BrylaRysowana);
 
@@ -75,12 +77,14 @@ bool ObiektGeom::Przelicz_i_Zapisz_Wierzcholki()
 
   do
   {
-
-    set_wsp() = matrix_obr * get_wsp();
+  
+    set_wsp() = macierz_obr * get_wsp();
    
     set_wsp() = (get_wsp() & get_Skala()) + przesun;
 
-    StrmWy << get_wsp() << endl;
+    StrmWy << get_wsp() << endl; 
+     x.push_back(get_wsp()[0]);
+     y.push_back(get_wsp()[1]);
     ++Indeks_Wiersza;
 
     if (Indeks_Wiersza >= 4)
@@ -92,7 +96,12 @@ bool ObiektGeom::Przelicz_i_Zapisz_Wierzcholki()
     StrmWe >> set_wsp();
     ;
   } while (!StrmWe.fail());
+  obrys.set_LeftBottom()[0]=(*min_element(x.begin(), x.end()))-0.05*get_Skala()[0];
+  obrys.set_LeftBottom()[1]=*min_element(y.begin(), y.end())-0.05*get_Skala()[1];
 
+  obrys.set_RightUp()[0]=*max_element(x.begin(), x.end())+0.05*get_Skala()[0];;
+  obrys.set_RightUp()[1]=*max_element(y.begin(), y.end())+0.05*get_Skala()[1];
+  
   if (!StrmWe.eof())
     return false;
 

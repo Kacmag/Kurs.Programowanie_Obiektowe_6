@@ -1,8 +1,8 @@
-#include "matrix3D.hh"
+#include "Matrix3D.hh"
 
-matrix_3D rotZ(double angle)
+Matrix3D rotZ(double angle)
 {
-    matrix_3D Wynik;
+    Matrix3D Wynik;
     double rad=angle*M_PI/180;
     Wynik[0][0] = cos(rad);
     Wynik[0][1] = -sin(rad);
